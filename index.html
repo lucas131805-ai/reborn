@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Reborn" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Reborn — Keep your word</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #141414;
+      --bg-elevated: #1a1a1a;
+      --text: #f5f5f5;
+      --text-muted: #888;
+      --accent: #e8e8e8;
+      --border: #2a2a2a;
+      --success: #4ade80;
+      --danger: #f87171;
+      --red: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.35s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== LANDING ===== */
+    #landing { text-align: center; gap: 40px; }
+
+    .logo { width: 68px; height: 68px; }
+    .logo svg { width: 100%; height: 100%; }
+
+    .headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 5vw, 2.5rem);
+      font-weight: 400;
+      line-height: 1.25;
+      max-width: 400px;
+    }
+    .headline em { font-style: italic; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 44px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, #f5f5f5 0%, #d4d4d4 100%);
+      color: #111;
+    }
+    .btn-primary:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(255,255,255,0.1); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 12px 24px;
+    }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-full { width: 100%; max-width: 340px; }
+    .btn:disabled { opacity: 0.4; pointer-events: none; }
+
+    /* ===== ONBOARDING ===== */
+    #onboarding {
+      justify-content: flex-start;
+      padding-top: 72px;
+      padding-bottom: 40px;
+    }
+
+    .progress-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--border); z-index: 100;
+    }
+    .progress-fill {
+      height: 100%; background: var(--text);
+      transition: width 0.35s ease;
+    }
+
+    .back-btn {
+      position: fixed; top: 18px; left: 18px;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      color: var(--text); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 50; font-size: 1.1rem;
+    }
+    .back-btn:hover { background: var(--border); }
+
+    .step {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      gap: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    .step.active { display: flex; }
+
+    .step-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--bg-elevated);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .step h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+    .step p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: -12px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .option {
+      padding: 15px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: left;
+      font-family: inherit;
+    }
+    .option:hover { background: var(--bg-elevated); border-color: #444; }
+    .option.selected {
+      background: var(--bg-elevated);
+      border-color: var(--text);
+    }
+
+    .options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+    .options-row .option {
+      flex: 1 1 calc(50% - 10px);
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .input-group { width: 100%; }
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      padding: 15px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus,
+    .input-group textarea:focus { border-color: #666; }
+    .input-group textarea { min-height: 90px; resize: vertical; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+    .chip {
+      padding: 12px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .chip:hover { border-color: #555; }
+    .chip.selected {
+      background: var(--bg-elevated);
+      border-color: var(--text);
+    }
+
+    /* ===== RADAR ===== */
+    .radar-container {
+      width: 100%;
+      max-width: 340px;
+      position: relative;
+    }
+    #radarCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .aura-block { text-align: center; margin-bottom: 8px; }
+    .aura-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .aura-score { font-size: 2.8rem; font-weight: 600; line-height: 1; }
+    .aura-delta { font-size: 0.95rem; color: var(--success); margin-top: 4px; }
+    .aura-date { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+    .compare-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    .compare-title span { color: var(--red); }
+
+    .toggle-row { display: flex; gap: 10px; margin-top: 12px; }
+    .toggle-btn {
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border-color: #555;
+    }
+    .toggle-btn.active.red {
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* ===== APP ===== */
+    #app {
+      justify-content: flex-start;
+      padding: 0;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .app-header {
+      width: 100%;
+      padding: 18px 22px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .app-header .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+    }
+    .rank-badge {
+      font-size: 0.72rem;
+      padding: 5px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      padding: 0 22px 16px;
+    }
+    .stat-card {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.5rem; font-weight: 600; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .streak-flame {
+      font-size: 1.15rem;
+      line-height: 1;
+      animation: flamePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes flamePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.85; }
+    }
+    .stat-card.streak-active {
+      border-color: rgba(251, 146, 60, 0.45);
+      background: linear-gradient(180deg, rgba(251,146,60,0.08) 0%, var(--bg-card) 100%);
+    }
+
+    /* Main promise */
+    .main-card {
+      width: calc(100% - 44px);
+      margin: 0 22px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .main-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+    .promise-text {
+      font-size: 1.05rem;
+      line-height: 1.45;
+      margin: 14px 0 8px;
+    }
+    .day-counter {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .actions { display: flex; gap: 10px; justify-content: center; }
+    .btn-success {
+      background: rgba(74, 222, 128, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .btn-success:hover { background: rgba(74, 222, 128, 0.22); }
+    .btn-fail {
+      background: rgba(248, 113, 113, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.22);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .btn-fail:hover { background: rgba(248, 113, 113, 0.18); }
+    .done-state { font-size: 0.92rem; font-weight: 500; }
+
+    /* Daily tasks section */
+    .tasks-section {
+      width: calc(100% - 44px);
+      margin: 0 22px 20px;
+    }
+    .tasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .tasks-header h4 {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tasks-progress {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .tasks-progress strong {
+      color: var(--text);
+    }
+
+    .mission-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .mission-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4ade80, #22c55e);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    /* Quote */
+    .quote-box {
+      width: calc(100% - 44px);
+      margin: 0 22px 18px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-align: center;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quote-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.4;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .quote-text.visible {
+      opacity: 1;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .task-item:hover { border-color: #3a3a3a; }
+    .task-item.done {
+      opacity: 0.55;
+      border-color: transparent;
+    }
+    .task-item.done .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #444;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 0.75rem;
+    }
+    .task-item.done .task-check {
+      background: var(--success);
+      border-color: var(--success);
+      color: #111;
+    }
+
+    .task-content { flex: 1; min-width: 0; }
+    .task-title {
+      font-size: 0.92rem;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .task-cat {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      opacity: 0.55;
+      transition: opacity 0.2s;
+    }
+    .task-item:hover .task-actions { opacity: 1; }
+    .task-action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .task-action-btn:hover { background: #2a2a2a; color: var(--text); }
+    .task-action-btn.delete:hover { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+    .add-task-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .add-task-btn:hover {
+      border-color: #555;
+      color: var(--text);
+      background: var(--bg-card);
+    }
+
+    .task-cat.physique { color: #f87171; }
+    .task-cat.focus { color: #60a5fa; }
+    .task-cat.mental { color: #a78bfa; }
+    .task-cat.social { color: #f472b6; }
+    .task-cat.richesse { color: #fbbf24; }
+    .task-cat.discipline { color: #34d399; }
+    .task-cat.stop { color: #fb923c; }
+    .task-cat.custom { color: #94a3b8; }
+
+    /* History */
+    .history { width: 100%; padding: 0 22px 40px; }
+    .history h4 {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .history-list { display: flex; flex-direction: column; gap: 7px; }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 14px;
+      background: var(--bg-card);
+      border-radius: 11px;
+      font-size: 0.88rem;
+    }
+    .status {
+      font-size: 0.75rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+    .status-kept { background: rgba(74, 222, 128, 0.14); color: var(--success); }
+    .status-broken { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
+    .empty-state {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .headline { font-size: 1.6rem; }
+      .step h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== LANDING ===== -->
+  <div id="landing" class="screen active">
+    <div class="logo">
+      <svg viewBox="0 0 100 100" fill="none">
+        <path d="M50 15 C42 15 35 22 35 32 C35 42 42 48 50 52 C58 48 65 42 65 32 C65 22 58 15 50 15Z" stroke="#f5f5f5" stroke-width="2.5"/>
+        <path d="M30 55 Q50 75 70 55" stroke="#f5f5f5" stroke-width="2.5"/>
+        <path d="M38 68 Q50 82 62 68" stroke="#f5f5f5" stroke-width="2" opacity="0.55"/>
+      </svg>
+    </div>
+    <h1 class="headline">Break out of<br><em>who you were.</em></h1>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <button class="btn btn-primary" onclick="startOnboarding()">Commencer</button>
+      <button class="btn btn-ghost" onclick="goToApp()">J’ai déjà un compte</button>
+    </div>
+  </div>
+
+  <!-- ===== ONBOARDING ===== -->
+  <div id="onboarding" class="screen">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <button class="back-btn" onclick="prevStep()" id="backBtn">←</button>
+
+    <div class="step" data-step="0">
+      <div class="step-icon">✦</div>
+      <h2>Je vais te poser quelques questions.</h2>
+      <p>Réponds honnêtement.<br>Personne ne te juge ici. Sauf toi.</p>
+      <button class="btn btn-primary btn-full" onclick="nextStep()">Construire mon profil</button>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="step-icon">👤</div>
+      <h2>Tu es…</h2>
+      <div class="options-row">
+        <button class="option" onclick="selectSingle(this, 'gender', 'Homme')">Homme</button>
+        <button class="option" onclick="selectSingle(this, 'gender', 'Femme')">Femme</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="step-icon">🪞</div>
+      <h2>Comment décrirais-tu ta vie en ce moment ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'lifeNow', 'Je stagne')">Je stagne</button>
+        <button class="option" onclick="selectSingle(this, 'lifeNow', 'Je suis perdu(e)')">Je suis perdu(e)</button>
+        <button class="option" onclick="selectSingle(this, 'lifeNow', 'Ça va, mais je veux plus')">Ça va, mais je veux plus</button>
+        <button class="option" onclick="selectSingle(this, 'lifeNow', 'Je suis motivé(e)')">Je suis motivé(e)</button>
+        <button class="option" onclick="selectSingle(this, 'lifeNow', 'Je me sens déjà en transformation')">Je me sens déjà en transformation</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="step-icon">🎯</div>
+      <h2>Sur quoi veux-tu le plus travailler ?</h2>
+      <p>Sélectionne un ou plusieurs axes</p>
+      <div class="chips" id="focusChips">
+        <button class="chip" data-val="physique" onclick="toggleChip(this)">Physique</button>
+        <button class="chip" data-val="focus" onclick="toggleChip(this)">Focus</button>
+        <button class="chip" data-val="mental" onclick="toggleChip(this)">Mental</button>
+        <button class="chip" data-val="social" onclick="toggleChip(this)">Social</button>
+        <button class="chip" data-val="richesse" onclick="toggleChip(this)">Richesse</button>
+        <button class="chip" data-val="discipline" onclick="toggleChip(this)">Discipline</button>
+      </div>
+      <button class="btn btn-primary btn-full" id="focusNext" disabled onclick="nextStep()">Continuer</button>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="step-icon">💪</div>
+      <h2>Combien d’entraînements par semaine ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'training', '0')">0 — Aucun</button>
+        <button class="option" onclick="selectSingle(this, 'training', '1-2')">1-2 fois</button>
+        <button class="option" onclick="selectSingle(this, 'training', '3-4')">3-4 fois</button>
+        <button class="option" onclick="selectSingle(this, 'training', '5+')">5+ fois</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="5">
+      <div class="step-icon">😴</div>
+      <h2>Comment décrirais-tu ton sommeil en ce moment ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'sleep', 'Très mauvais')">Très mauvais</button>
+        <button class="option" onclick="selectSingle(this, 'sleep', 'Moyen')">Moyen</button>
+        <button class="option" onclick="selectSingle(this, 'sleep', 'Correct')">Correct</button>
+        <button class="option" onclick="selectSingle(this, 'sleep', 'Excellent')">Excellent</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="6">
+      <div class="step-icon">📱</div>
+      <h2>Combien de temps par jour sur le téléphone ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'phone', '<1h')">&lt; 1 heure</button>
+        <button class="option" onclick="selectSingle(this, 'phone', '1-3h')">1 à 3 heures</button>
+        <button class="option" onclick="selectSingle(this, 'phone', '3-5h')">3 à 5 heures</button>
+        <button class="option" onclick="selectSingle(this, 'phone', '5h+')">Plus de 5 heures</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="7">
+      <div class="step-icon">📚</div>
+      <h2>Quand as-tu fini un livre ou appris quelque chose de nouveau pour la dernière fois ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'learning', 'Cette semaine')">Cette semaine</button>
+        <button class="option" onclick="selectSingle(this, 'learning', 'Ce mois-ci')">Ce mois-ci</button>
+        <button class="option" onclick="selectSingle(this, 'learning', 'Il y a plusieurs mois')">Il y a plusieurs mois</button>
+        <button class="option" onclick="selectSingle(this, 'learning', 'Je ne sais plus')">Je ne sais plus</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="8">
+      <div class="step-icon">❤️</div>
+      <h2>À quelle fréquence prends-tu du temps pour ceux qui comptent ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'socialTime', 'Presque jamais')">Presque jamais</button>
+        <button class="option" onclick="selectSingle(this, 'socialTime', 'Une fois par mois')">Une fois par mois</button>
+        <button class="option" onclick="selectSingle(this, 'socialTime', 'Chaque semaine')">Chaque semaine</button>
+        <button class="option" onclick="selectSingle(this, 'socialTime', 'Plusieurs fois par semaine')">Plusieurs fois par semaine</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="9">
+      <div class="step-icon">💰</div>
+      <h2>Combien as-tu gagné le mois dernier ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'income', '<1000')">Moins de 1 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'income', '1000-2000')">1 000 – 2 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'income', '2000-4000')">2 000 – 4 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'income', '4000+')">Plus de 4 000 €</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="10">
+      <div class="step-icon">🚀</div>
+      <h2>Combien veux-tu gagner par mois ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'incomeGoal', '2000-3000')">2 000 – 3 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'incomeGoal', '3000-5000')">3 000 – 5 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'incomeGoal', '5000-10000')">5 000 – 10 000 €</button>
+        <button class="option" onclick="selectSingle(this, 'incomeGoal', '10000+')">Plus de 10 000 €</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="11">
+      <div class="step-icon">🛑</div>
+      <h2>Quelque chose que tu veux arrêter ?</h2>
+      <p>Sélectionne ce qui te concerne (ou rien)</p>
+      <div class="chips" id="stopChips">
+        <button class="chip" data-val="porno" onclick="toggleChip(this)">Porno</button>
+        <button class="chip" data-val="cigarette" onclick="toggleChip(this)">Cigarette</button>
+        <button class="chip" data-val="alcool" onclick="toggleChip(this)">Alcool</button>
+        <button class="chip" data-val="malbouffe" onclick="toggleChip(this)">Malbouffe</button>
+        <button class="chip" data-val="jeux" onclick="toggleChip(this)">Jeux vidéo</button>
+        <button class="chip" data-val="rien" onclick="toggleChip(this)">Rien de tout ça</button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="nextStep()">Continuer</button>
+    </div>
+
+    <div class="step" data-step="12">
+      <div class="step-icon">🔥</div>
+      <h2>Pourquoi veux-tu changer ?</h2>
+      <div class="input-group">
+        <textarea id="whyChange" placeholder="Écris en quelques mots ce qui te pousse vraiment…"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="nextStep()">Continuer</button>
+    </div>
+
+    <div class="step" data-step="13">
+      <div class="step-icon">🌌</div>
+      <h2>Quels sont tes objectifs long terme ?</h2>
+      <div class="input-group">
+        <textarea id="longTerm" placeholder="Ex: Devenir indépendant financièrement, avoir un corps athlétique…"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="nextStep()">Continuer</button>
+    </div>
+
+    <div class="step" data-step="14">
+      <div class="step-icon">✍️</div>
+      <h2>Quelle est ta promesse principale à toi-même ?</h2>
+      <p>Celle que tu veux vraiment tenir chaque jour.</p>
+      <div class="input-group">
+        <textarea id="promiseInput" placeholder="Ex: Je me lève avant 7h et je m’entraîne 5x par semaine…"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="nextStep()">Continuer</button>
+    </div>
+
+    <div class="step" data-step="15">
+      <div class="step-icon">⏳</div>
+      <h2>Pendant combien de jours veux-tu tenir cette promesse ?</h2>
+      <div class="options">
+        <button class="option" onclick="selectSingle(this, 'goalDays', 21)">21 jours — Le début d’une habitude</button>
+        <button class="option" onclick="selectSingle(this, 'goalDays', 66)">66 jours — Transformation réelle</button>
+        <button class="option" onclick="selectSingle(this, 'goalDays', 90)">90 jours — Niveau supérieur</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="16">
+      <div class="compare-title">Aujourd’hui vs. <span>Jour <span id="goalDaysLabel">66</span>.</span></div>
+      <div class="aura-block">
+        <div class="aura-label">Aura</div>
+        <div class="aura-score" id="auraScore">—</div>
+        <div class="aura-delta" id="auraDelta"></div>
+        <div class="aura-date" id="auraDate"></div>
+      </div>
+      <div class="radar-container">
+        <canvas id="radarCanvas" width="340" height="340"></canvas>
+      </div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="btnToday" onclick="setRadarMode('today')">○ Aujourd’hui</button>
+        <button class="toggle-btn red" id="btnFuture" onclick="setRadarMode('future')">● Jour <span id="goalDaysLabel2">66</span></button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-top:8px;">Si tu tiens chaque promesse.</p>
+      <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="finishOnboarding()">Voir mes <span id="goalDaysLabel3">66</span> jours</button>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div id="app" class="screen">
+    <div class="app-header">
+      <div class="brand">Reborn</div>
+      <div class="rank-badge" id="rankBadge">Novice</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" id="streakCard">
+        <div class="stat-value"><span class="streak-flame" id="streakFlame" style="display:none;">🔥</span><span id="streakValue">0</span></div>
+        <div class="stat-label">Série</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalValue">0</div>
+        <div class="stat-label">Jours tenus</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="goalValue">66</div>
+        <div class="stat-label">Objectif</div>
+      </div>
+    </div>
+
+    <!-- Motivational quote -->
+    <div class="quote-box">
+      <div class="quote-text" id="quoteText"></div>
+    </div>
+
+    <!-- Main promise -->
+    <div class="main-card">
+      <h3>Ta promesse du jour</h3>
+      <div class="promise-text" id="promiseDisplay">—</div>
+      <div class="day-counter" id="dayCounter">Jour 1 / 66</div>
+      <div class="actions" id="actions">
+        <button class="btn-success" onclick="markDay(true)">✓ Tenue</button>
+        <button class="btn-fail" onclick="markDay(false)">✗ Cassée</button>
+      </div>
+      <div class="done-state" id="doneState" style="display:none;"></div>
+    </div>
+
+    <!-- Daily tasks generated from answers -->
+    <div class="tasks-section">
+      <div class="tasks-header">
+        <h4>Missions du jour</h4>
+        <div class="tasks-progress"><strong id="tasksDone">0</strong> / <span id="tasksTotal">0</span></div>
+      </div>
+      <div class="mission-progress-bar">
+        <div class="mission-progress-fill" id="missionProgressFill"></div>
+      </div>
+      <div class="task-list" id="taskList"></div>
+      <button class="add-task-btn" onclick="addTask()">+ Ajouter une mission</button>
+    </div>
+
+    <div class="history">
+      <h4>Historique récent</h4>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">Aucun jour enregistré pour l’instant.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== STATE ==========
+    const state = {
+      currentStep: 0,
+      totalSteps: 17,
+      gender: null,
+      lifeNow: null,
+      focus: [],
+      training: null,
+      sleep: null,
+      phone: null,
+      learning: null,
+      socialTime: null,
+      income: null,
+      incomeGoal: null,
+      stop: [],
+      whyChange: '',
+      longTerm: '',
+      promise: '',
+      goalDays: 66,
+      scores: { physique: 20, focus: 20, mental: 20, social: 15, richesse: 15, discipline: 20 },
+      futureScores: { physique: 80, focus: 80, mental: 80, social: 70, richesse: 70, discipline: 85 },
+      aura: 0,
+      futureAura: 0,
+      streak: 0,
+      totalKept: 0,
+      history: [],
+      lastCheckDate: null,
+      todayDone: false,
+      dailyTasks: [],          // generated tasks
+      tasksChecked: {}         // { taskId: true/false } for today
+    };
+
+    const ranks = [
+      { name: 'Novice', min: 0 },
+     
+      { name: 'Apprenti', min: 7 },
+      { name: 'Discipliné', min: 21 },
+      { name: 'Constant', min: 40 },
+      { name: 'Maître de soi', min: 66 },
+      { name: 'Légende', min: 100 }
+    ];
+
+    const axes = ['physique', 'focus', 'mental', 'social', 'richesse', 'discipline'];
+    const axisLabels = {
+      physique: 'PHYSIQUE', focus: 'FOCUS', mental: 'MENTAL',
+      social: 'SOCIAL', richesse: 'RICHESSE', discipline: 'DISCIPLINE'
+    };
+
+    // ========== PERSISTENCE ==========
+    function save() {
+      try {
+        localStorage.setItem('reborn_data_v3', JSON.stringify(state));
+      } catch (e) {
+        console.warn('Impossible de sauvegarder', e);
+      }
+    }
+    function load() {
+      try {
+        const raw = localStorage.getItem('reborn_data_v3');
+        if (raw) {
+          const data = JSON.parse(raw);
+          Object.assign(state, data);
+          // Reset only the daily flags if it's a new day
+          const today = new Date().toDateString();
+          if (state.lastCheckDate !== today) {
+            state.todayDone = false;
+            state.tasksChecked = {};
+          }
+          // Ensure arrays exist
+          if (!Array.isArray(state.dailyTasks)) state.dailyTasks = [];
+          if (!state.tasksChecked) state.tasksChecked = {};
+          if (!Array.isArray(state.history)) state.history = [];
+          if (!Array.isArray(state.focus)) state.focus = [];
+          if (!Array.isArray(state.stop)) state.stop = [];
+          return true;
+        }
+      } catch (e) {
+        console.warn('Impossible de charger les données', e);
+      }
+      return false;
+    }
+
+    // ========== GENERATE DAILY TASKS ==========
+    function generateDailyTasks() {
+      const tasks = [];
+      let id = 0;
+
+      // Always include the main promise as context, but tasks are complementary
+
+      // --- STOP habits ---
+      if (state.stop.includes('porno')) {
+        tasks.push({ id: id++, title: 'Zéro contenu pornographique aujourd’hui', cat: 'stop', catLabel: 'Arrêt' });
+      }
+      if (state.stop.includes('cigarette')) {
+        tasks.push({ id: id++, title: 'Pas de cigarette aujourd’hui', cat: 'stop', catLabel: 'Arrêt' });
+      }
+      if (state.stop.includes('alcool')) {
+        tasks.push({ id: id++, title: 'Pas d’alcool aujourd’hui', cat: 'stop', catLabel: 'Arrêt' });
+      }
+      if (state.stop.includes('malbouffe')) {
+        tasks.push({ id: id++, title: 'Manger propre (pas de malbouffe)', cat: 'stop', catLabel: 'Arrêt' });
+      }
+      if (state.stop.includes('jeux')) {
+        tasks.push({ id: id++, title: 'Pas de jeux vidéo aujourd’hui', cat: 'stop', catLabel: 'Arrêt' });
+      }
+
+      // --- PHYSIQUE ---
+      if (state.focus.includes('physique') || state.training === '0' || state.training === '1-2') {
+        if (state.training === '0' || state.training === '1-2') {
+          tasks.push({ id: id++, title: 'Faire au moins 30 min d’activité physique', cat: 'physique', catLabel: 'Physique' });
+        } else {
+          tasks.push({ id: id++, title: 'Compléter ta séance d’entraînement', cat: 'physique', catLabel: 'Physique' });
+        }
+      }
+
+      // --- FOCUS / PHONE ---
+      if (state.focus.includes('focus') || state.phone === '3-5h' || state.phone === '5h+') {
+        tasks.push({ id: id++, title: 'Limiter le téléphone (max 2h hors travail)', cat: 'focus', catLabel: 'Focus' });
+      }
+      if (state.focus.includes('focus')) {
+        tasks.push({ id: id++, title: '1 session de deep work (cours, business, projet…) 45 min min', cat: 'focus', catLabel: 'Focus' });
+      }
+
+      // --- MENTAL / LEARNING / SLEEP ---
+      if (state.focus.includes('mental') || state.learning === 'Il y a plusieurs mois' || state.learning === 'Je ne sais plus') {
+        tasks.push({ id: id++, title: 'Lire ou apprendre 20 min minimum', cat: 'mental', catLabel: 'Mental' });
+      }
+      if (state.sleep === 'Très mauvais' || state.sleep === 'Moyen') {
+        tasks.push({ id: id++, title: 'Se coucher avant 23h', cat: 'mental', catLabel: 'Mental' });
+      }
+      if (state.focus.includes('mental')) {
+        tasks.push({ id: id++, title: '5 min de méditation ou respiration', cat: 'mental', catLabel: 'Mental' });
+      }
+
+      // --- SOCIAL ---
+      if (state.focus.includes('social') || state.socialTime === 'Presque jamais' || state.socialTime === 'Une fois par mois') {
+        tasks.push({ id: id++, title: 'Prendre des nouvelles de quelqu’un qui compte', cat: 'social', catLabel: 'Social' });
+      }
+
+      // --- RICHESSE ---
+      if (state.focus.includes('richesse')) {
+        tasks.push({ id: id++, title: '1 action concrète pour augmenter tes revenus', cat: 'richesse', catLabel: 'Richesse' });
+      }
+
+      // --- DISCIPLINE (always useful) ---
+      if (state.focus.includes('discipline') || state.lifeNow === 'Je stagne' || state.lifeNow === 'Je suis perdu(e)') {
+        tasks.push({ id: id++, title: 'Noter 3 choses accomplies aujourd’hui', cat: 'discipline', catLabel: 'Discipline' });
+      }
+
+      // Fallback if almost empty
+      if (tasks.length < 2) {
+        tasks.push({ id: id++, title: 'Respecter ta promesse principale', cat: 'discipline', catLabel: 'Discipline' });
+        tasks.push({ id: id++, title: 'Boire 2L d’eau minimum', cat: 'physique', catLabel: 'Physique' });
+      }
+
+      // Limit to 6-7 max to keep it realistic
+      state.dailyTasks = tasks.slice(0, 7);
+    }
+
+    // ========== NAV ==========
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function startOnboarding() {
+      state.currentStep = 0;
+      showScreen('onboarding');
+      updateStep();
+    }
+
+    function goToApp() {
+      if (load() && state.promise) {
+        // On ne régénère les missions que si elles n'existent pas encore
+        if (!state.dailyTasks || state.dailyTasks.length === 0) {
+          generateDailyTasks();
+          save();
+        }
+        showScreen('app');
+        renderApp();
+      } else {
+        startOnboarding();
+      }
+    }
+
+    function updateStep() {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const el = document.querySelector(`.step[data-step="${state.currentStep}"]`);
+      if (el) el.classList.add('active');
+
+      const pct = (state.currentStep / (state.totalSteps - 1)) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+      document.getElementById('backBtn').style.display = state.currentStep === 0 ? 'none' : 'flex';
+
+      if (state.currentStep === 16) {
+        computeScores();
+        drawRadar('both');
+        document.getElementById('goalDaysLabel').textContent = state.goalDays;
+        document.getElementById('goalDaysLabel2').textContent = state.goalDays;
+        document.getElementById('goalDaysLabel3').textContent = state.goalDays;
+      }
+    }
+
+    function nextStep() {
+      if (state.currentStep === 12) state.whyChange = document.getElementById('whyChange').value.trim();
+      if (state.currentStep === 13) state.longTerm = document.getElementById('longTerm').value.trim();
+      if (state.currentStep === 14) {
+        const p = document.getElementById('promiseInput').value.trim();
+        if (p.length < 5) { alert('Écris une promesse un peu plus précise.'); return; }
+        state.promise = p;
+      }
+      if (state.currentStep === 3 && state.focus.length === 0) {
+        alert('Sélectionne au moins un axe.');
+        return;
+      }
+
+      if (state.currentStep < state.totalSteps - 1) {
+        state.currentStep++;
+        updateStep();
+      }
+    }
+
+    function prevStep() {
+      if (state.currentStep > 0) {
+        state.currentStep--;
+        updateStep();
+      } else {
+        showScreen('landing');
+      }
+    }
+
+    function selectSingle(el, key, value) {
+      el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      state[key] = value;
+      setTimeout(() => nextStep(), 280);
+    }
+
+    function toggleChip(el) {
+      const val = el.dataset.val;
+      const parent = el.parentElement;
+      const isStop = parent.id === 'stopChips';
+
+      if (isStop && val === 'rien') {
+        parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        state.stop = ['rien'];
+      } else {
+        if (isStop) {
+          const rien = parent.querySelector('[data-val="rien"]');
+          if (rien) rien.classList.remove('selected');
+          state.stop = state.stop.filter(x => x !== 'rien');
+        }
+        el.classList.toggle('selected');
+        const arr = isStop ? 'stop' : 'focus';
+        if (el.classList.contains('selected')) {
+          if (!state[arr].includes(val)) state[arr].push(val);
+        } else {
+          state[arr] = state[arr].filter(x => x !== val);
+        }
+      }
+
+      if (parent.id === 'focusChips') {
+        document.getElementById('focusNext').disabled = state.focus.length === 0;
+      }
+    }
+
+    // ========== SCORING + RADAR (same as before) ==========
+    function computeScores() {
+      let s = { physique: 25, focus: 30, mental: 30, social: 25, richesse: 20, discipline: 25 };
+
+      if (state.training === '0') s.physique = 15;
+      else if (state.training === '1-2') s.physique = 40;
+      else if (state.training === '3-4') s.physique = 65;
+      else if (state.training === '5+') s.physique = 85;
+
+      if (state.sleep === 'Très mauvais') { s.mental -= 15; s.focus -= 10; }
+      else if (state.sleep === 'Moyen') s.mental -= 5;
+      else if (state.sleep === 'Excellent') { s.mental += 15; s.focus += 10; }
+
+      if (state.phone === '5h+') { s.focus = Math.max(10, s.focus - 25); s.discipline -= 15; }
+      else if (state.phone === '3-5h') { s.focus -= 12; s.discipline -= 8; }
+      else if (state.phone === '<1h') { s.focus += 15; s.discipline += 10; }
+
+      if (state.learning === 'Cette semaine') s.mental += 20;
+      else if (state.learning === 'Ce mois-ci') s.mental += 10;
+      else if (state.learning === 'Je ne sais plus') s.mental -= 10;
+
+      if (state.socialTime === 'Presque jamais') s.social = 12;
+      else if (state.socialTime === 'Une fois par mois') s.social = 30;
+      else if (state.socialTime === 'Chaque semaine') s.social = 60;
+      else if (state.socialTime === 'Plusieurs fois par semaine') s.social = 80;
+
+      if (state.income === '<1000') s.richesse = 15;
+      else if (state.income === '1000-2000') s.richesse = 35;
+      else if (state.income === '2000-4000') s.richesse = 55;
+      else if (state.income === '4000+') s.richesse = 75;
+
+      if (state.stop.includes('porno') || state.stop.includes('jeux') || state.stop.includes('malbouffe')) {
+        s.discipline = Math.max(15, s.discipline - 10);
+      }
+      if (state.lifeNow === 'Je stagne' || state.lifeNow === 'Je suis perdu(e)') {
+        s.discipline = Math.max(10, s.discipline - 10);
+        s.mental = Math.max(15, s.mental - 8);
+      }
+      if (state.lifeNow === 'Je me sens déjà en transformation') {
+        s.discipline += 15; s.mental += 10;
+      }
+
+      axes.forEach(a => s[a] = Math.max(8, Math.min(92, Math.round(s[a]))));
+      state.scores = s;
+
+      const future = {};
+      axes.forEach(a => {
+        const isFocus = state.focus.includes(a);
+        future[a] = isFocus
+          ? Math.min(95, s[a] + 35 + Math.floor(Math.random() * 10))
+          : Math.min(90, s[a] + 18 + Math.floor(Math.random() * 8));
+      });
+      future.discipline = Math.min(95, future.discipline + 8);
+      state.futureScores = future;
+
+      state.aura = Math.round(axes.reduce((sum, a) => sum + s[a], 0) / 6);
+      state.futureAura = Math.round(axes.reduce((sum, a) => sum + future[a], 0) / 6);
+
+      document.getElementById('auraScore').textContent = state.futureAura;
+      document.getElementById('auraDelta').textContent = `+${state.futureAura - state.aura}`;
+      const d = new Date();
+      d.setDate(d.getDate() + state.goalDays);
+      document.getElementById('auraDate').textContent = `Jour ${state.goalDays} · ${d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+    }
+
+    let radarMode = 'both';
+    function setRadarMode(mode) {
+      radarMode = mode;
+      document.getElementById('btnToday').classList.toggle('active', mode === 'today' || mode === 'both');
+      document.getElementById('btnFuture').classList.toggle('active', mode === 'future' || mode === 'both');
+      document.getElementById('btnFuture').classList.toggle('red', mode === 'future' || mode === 'both');
+      drawRadar(mode);
+    }
+
+    function drawRadar(mode = 'both') {
+      const canvas = document.getElementById('radarCanvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const cx = w / 2, cy = h / 2;
+      const radius = Math.min(w, h) * 0.36;
+      const n = 6;
+      const angleStep = (Math.PI * 2) / n;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius + 40);
+      grad.addColorStop(0, 'rgba(239,68,68,0.08)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(cx, cy, radius + 40, 0, Math.PI * 2); ctx.fill();
+
+      for (let r = 1; r <= 4; r++) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= n; i++) {
+          const a = -Math.PI / 2 + i * angleStep;
+          const x = cx + Math.cos(a) * (radius * r / 4);
+          const y = cy + Math.sin(a) * (radius * r / 4);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath(); ctx.stroke();
+      }
+
+      for (let i = 0; i < n; i++) {
+        const a = -Math.PI / 2 + i * angleStep;
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius);
+        ctx.stroke();
+      }
+
+      ctx.font = '600 11px Inter, sans-serif';
+      ctx.fillStyle = '#ccc';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      axes.forEach((key, i) => {
+        const a = -Math.PI / 2 + i * angleStep;
+        ctx.fillText(axisLabels[key], cx + Math.cos(a) * (radius + 28), cy + Math.sin(a) * (radius + 28));
+      });
+
+      function drawPolygon(scores, isRed, fillAlpha, lineWidth, dashed) {
+        ctx.beginPath();
+        axes.forEach((key, i) => {
+          const val = scores[key] / 100;
+          const a = -Math.PI / 2 + i * angleStep;
+          const x = cx + Math.cos(a) * radius * val;
+          const y = cy + Math.sin(a) * radius * val;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.setLineDash(dashed ? [5, 5] : []);
+        ctx.fillStyle = isRed ? `rgba(239,68,68,${fillAlpha})` : `rgba(255,255,255,${fillAlpha})`;
+        ctx.strokeStyle = isRed ? 'rgba(239,68,68,0.95)' : 'rgba(255,255,255,0.5)';
+        ctx.fill();
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        axes.forEach((key, i) => {
+          const val = scores[key] / 100;
+          const a = -Math.PI / 2 + i * angleStep;
+          ctx.beginPath();
+          ctx.arc(cx + Math.cos(a) * radius * val, cy + Math.sin(a) * radius * val, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = isRed ? '#ef4444' : '#fff';
+          ctx.fill();
+        });
+      }
+
+      if (mode === 'future' || mode === 'both') {
+        ctx.font = '600 12px Inter, sans-serif';
+        ctx.fillStyle = '#fff';
+        axes.forEach((key, i) => {
+          const val = state.futureScores[key] / 100;
+          const a = -Math.PI / 2 + i * angleStep;
+          ctx.fillText(state.futureScores[key], cx + Math.cos(a) * (radius * val + 16), cy + Math.sin(a) * (radius * val + 16));
+        });
+      }
+
+      if (mode === 'today' || mode === 'both') drawPolygon(state.scores, false, 0.08, 1.5, true);
+      if (mode === 'future' || mode === 'both') drawPolygon(state.futureScores, true, 0.22, 2.2, false);
+    }
+
+    function finishOnboarding() {
+      state.streak = 0;
+      state.totalKept = 0;
+      state.history = [];
+      state.todayDone = false;
+      state.lastCheckDate = null;
+      state.tasksChecked = {};
+      generateDailyTasks();
+      save();
+      showScreen('app');
+      renderApp();
+    }
+
+    // ========== APP ==========
+    function getRank() {
+      let current = ranks[0];
+      for (const r of ranks) if (state.totalKept >= r.min) current = r;
+      return current;
+    }
+
+    function renderApp() {
+      document.getElementById('promiseDisplay').textContent = state.promise || '—';
+      document.getElementById('streakValue').textContent = state.streak;
+      document.getElementById('totalValue').textContent = state.totalKept;
+      document.getElementById('goalValue').textContent = state.goalDays;
+      document.getElementById('dayCounter').textContent = `Jour ${state.totalKept + (state.todayDone ? 0 : 1)} / ${state.goalDays}`;
+      document.getElementById('rankBadge').textContent = getRank().name;
+
+      // Streak flame (Duolingo style)
+      const flame = document.getElementById('streakFlame');
+      const streakCard = document.getElementById('streakCard');
+      if (state.streak > 0) {
+        flame.style.display = 'inline';
+        streakCard.classList.add('streak-active');
+      } else {
+        flame.style.display = 'none';
+        streakCard.classList.remove('streak-active');
+      }
+
+      const actions = document.getElementById('actions');
+      const doneState = document.getElementById('doneState');
+      if (state.todayDone) {
+        actions.style.display = 'none';
+        doneState.style.display = 'block';
+        const last = state.history[0];
+        doneState.textContent = last && last.kept ? '✓ Promesse tenue aujourd’hui' : '✗ Promesse cassée aujourd’hui';
+        doneState.style.color = last && last.kept ? 'var(--success)' : 'var(--danger)';
+      } else {
+        actions.style.display = 'flex';
+        doneState.style.display = 'none';
+      }
+
+      // Tasks
+      renderTasks();
+
+      // History
+      const list = document.getElementById('historyList');
+      if (state.history.length === 0) {
+        list.innerHTML = '<div class="empty-state">Aucun jour enregistré pour l’instant.</div>';
+      } else {
+        list.innerHTML = state.history.slice(0, 12).map(h => `
+          <div class="history-item">
+            <span>${h.date}</span>
+            <span class="status ${h.kept ? 'status-kept' : 'status-broken'}">${h.kept ? 'Tenue' : 'Cassée'}</span>
+          </div>
+        `).join('');
+      }
+
+      // Quote
+      showQuote();
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('taskList');
+      const progressFill = document.getElementById('missionProgressFill');
+
+      if (!state.dailyTasks || state.dailyTasks.length === 0) {
+        list.innerHTML = '<div class="empty-state">Aucune mission. Ajoutes-en une ↓</div>';
+        document.getElementById('tasksDone').textContent = '0';
+        document.getElementById('tasksTotal').textContent = '0';
+        if (progressFill) progressFill.style.width = '0%';
+        return;
+      }
+
+      let doneCount = 0;
+      list.innerHTML = state.dailyTasks.map(t => {
+        const checked = !!state.tasksChecked[t.id];
+        if (checked) doneCount++;
+        return `
+          <div class="task-item ${checked ? 'done' : ''}">
+            <div class="task-check" onclick="toggleTask(${t.id})">${checked ? '✓' : ''}</div>
+            <div class="task-content" onclick="toggleTask(${t.id})">
+              <div class="task-title">${escapeHtml(t.title)}</div>
+              <div class="task-cat ${t.cat}">${t.catLabel || 'Perso'}</div>
+            </div>
+            <div class="task-actions">
+              <button class="task-action-btn" title="Modifier" onclick="event.stopPropagation(); editTask(${t.id})">✎</button>
+              <button class="task-action-btn delete" title="Supprimer" onclick="event.stopPropagation(); deleteTask(${t.id})">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('tasksDone').textContent = doneCount;
+      document.getElementById('tasksTotal').textContent = state.dailyTasks.length;
+
+      const pct = state.dailyTasks.length ? Math.round((doneCount / state.dailyTasks.length) * 100) : 0;
+      if (progressFill) progressFill.style.width = pct + '%';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function editTask(id) {
+      const task = state.dailyTasks.find(t => t.id === id);
+      if (!task) return;
+      const newTitle = prompt('Modifier la mission :', task.title);
+      if (newTitle === null) return;
+      const trimmed = newTitle.trim();
+      if (trimmed.length < 2) {
+        alert('Le texte est trop court.');
+        return;
+      }
+      task.title = trimmed;
+      save();
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      if (!confirm('Supprimer cette mission ?')) return;
+      state.dailyTasks = state.dailyTasks.filter(t => t.id !== id);
+      delete state.tasksChecked[id];
+      save();
+      renderTasks();
+    }
+
+    function addTask() {
+      const title = prompt('Nouvelle mission :');
+      if (title === null) return;
+      const trimmed = title.trim();
+      if (trimmed.length < 2) {
+        alert('Écris au moins quelques caractères.');
+        return;
+      }
+      const maxId = state.dailyTasks.reduce((m, t) => Math.max(m, t.id), 0);
+      state.dailyTasks.push({
+        id: maxId + 1,
+        title: trimmed,
+        cat: 'custom',
+        catLabel: 'Perso'
+      });
+      save();
+      renderTasks();
+    }
+
+    // ========== QUOTES ==========
+    const quotes = [
+      "La discipline est le pont entre les objectifs et l’accomplissement.",
+      "Tu n’as pas à être parfait. Tu as juste à être constant.",
+      "Chaque promesse tenue te rapproche de qui tu veux devenir.",
+      "Le futur se construit un jour à la fois.",
+      "Ce n’est pas la motivation qui crée l’habitude, c’est l’habitude qui crée la motivation.",
+      "Fais-le même quand tu n’en as pas envie. Surtout ce jour-là.",
+      "Tu es plus fort que tes excuses.",
+      "Un jour de plus. Une promesse de plus.",
+      "La version de toi dans 66 jours te remerciera.",
+      "Arrête d’attendre d’être prêt. Commence."
+    ];
+    let currentQuoteIndex = -1;
+
+    function showQuote() {
+      const el = document.getElementById('quoteText');
+      if (!el) return;
+      // Pick a different quote
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * quotes.length);
+      } while (idx === currentQuoteIndex && quotes.length > 1);
+      currentQuoteIndex = idx;
+
+      el.classList.remove('visible');
+      setTimeout(() => {
+        el.textContent = '« ' + quotes[idx] + ' »';
+        el.classList.add('visible');
+      }, 300);
+    }
+
+    // Rotate quote every 12 seconds
+    setInterval(() => {
+      if (document.getElementById('app').classList.contains('active')) {
+        showQuote();
+      }
+    }, 12000);
+
+    function toggleTask(id) {
+      state.tasksChecked[id] = !state.tasksChecked[id];
+      save();
+      renderTasks();
+    }
+
+    function markDay(kept) {
+      const today = new Date().toDateString();
+      if (state.lastCheckDate === today) return;
+
+      state.todayDone = true;
+      state.lastCheckDate = today;
+      const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+      if (kept) {
+        state.streak += 1;
+        state.totalKept += 1;
+        state.history.unshift({ date: dateStr, kept: true });
+      } else {
+        state.streak = 0;
+        state.history.unshift({ date: dateStr, kept: false });
+      }
+      save();
+      renderApp();
+    }
+
+    // INIT — charge automatiquement le profil sauvegardé
+    (function () {
+      if (load() && state.promise) {
+        if (!state.dailyTasks || state.dailyTasks.length === 0) {
+          generateDailyTasks();
+          save();
+        }
+        showScreen('app');
+        renderApp();
+      }
+    })();
+
+    // Enregistrement du Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('Reborn PWA prête', reg.scope))
+          .catch((err) => console.log('SW non enregistré', err));
+      });
+    }
+  </script>
+</body>
+</html>
